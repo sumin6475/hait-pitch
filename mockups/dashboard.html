@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --page:hsl(228 25% 96%); --surface:#fff; --sidebar:#fff; --muted-bg:hsl(228 25% 96%);
+    --border:hsl(228 20% 90%); --text:hsl(240 24% 16%); --muted:hsl(228 10% 48%);
+    --primary:hsl(245 55% 55%); --primary-soft:hsl(245 55% 55% / .1);
+    --purple-light:hsl(262 96% 74%); --teal:hsl(174 70% 40%); --blue:hsl(214 90% 56%);
+    --success:hsl(160 68% 40%); --warning:hsl(38 92% 48%); --danger:hsl(0 72% 55%);
+    --radius:12px; --sans:"DM Sans",system-ui,sans-serif; --mono:"JetBrains Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{width:1600px;font-family:var(--sans);color:var(--text);-webkit-font-smoothing:antialiased;background:var(--page)}
+  .screen{width:1600px;height:900px;display:flex;overflow:hidden;background:var(--page)}
+  /* sidebar */
+  .side{width:248px;flex-shrink:0;background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column}
+  .logo{display:flex;align-items:center;gap:10px;padding:20px}
+  .logo .ic{color:var(--primary);display:inline-flex}
+  .logo b{font-weight:700;font-size:15px;letter-spacing:-.01em}
+  .navg{padding:6px 12px}
+  .navg .grp{font-size:10.5px;font-weight:600;letter-spacing:.08em;color:var(--muted);padding:14px 12px 6px}
+  .nav{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;font-size:14px;color:var(--muted);margin-bottom:2px}
+  .nav .ic{display:inline-flex}
+  .nav.on{background:var(--primary-soft);color:var(--primary);font-weight:600}
+  .nav.off{opacity:.45}
+  .side .user{margin-top:auto;border-top:1px solid var(--border);padding:14px 12px;display:flex;align-items:center;gap:11px}
+  .ava{width:32px;height:32px;border-radius:999px;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+  .user b{font-size:13.5px;font-weight:600;display:block}
+  .user span{font-size:12px;color:var(--muted)}
+  /* main */
+  .main{flex:1;display:flex;flex-direction:column;min-width:0}
+  .topbar{height:60px;flex-shrink:0;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+  .search{position:relative;width:280px}
+  .search input{height:38px;width:100%;border-radius:10px;background:var(--page);border:none;padding:0 56px 0 40px;font-family:var(--sans);font-size:14px;color:var(--text)}
+  .search .ic{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);display:inline-flex}
+  .search .kbd{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted);font-family:var(--mono)}
+  .content{flex:1;overflow:hidden;padding:28px}
+  .phead{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:22px}
+  .phead h1{font-size:24px;font-weight:600;letter-spacing:-.01em}
+  .phead p{font-size:14px;color:var(--muted);margin-top:3px}
+  .phead .upd{font-size:13px;color:var(--muted)}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 1px 2px hsl(240 24% 16% / .04),0 4px 14px -8px hsl(240 24% 16% / .10)}
+  /* stat cards */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:20px}
+  .stat{padding:20px}
+  .stat .h{display:flex;align-items:center;justify-content:space-between}
+  .stat .lbl{font-size:13px;color:var(--muted)}
+  .stat .ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center}
+  .stat .val{font-size:34px;font-weight:700;letter-spacing:-.02em;margin-top:14px}
+  .stat .val small{font-size:15px;font-weight:500;color:var(--muted);margin-left:6px}
+  /* overview grids */
+  .grid32{display:grid;grid-template-columns:3fr 2fr;gap:18px;align-items:start;margin-bottom:20px}
+  .ct{font-size:13px;font-weight:600;margin-bottom:14px}
+  .chart{height:200px;display:flex;align-items:flex-end;gap:26px;padding:0 6px;position:relative;border-bottom:1px solid var(--border)}
+  .target{position:absolute;left:0;right:0;top:24px;border-top:1px dashed hsl(228 10% 55%)}
+  .target span{position:absolute;right:0;top:-16px;font-size:10.5px;color:var(--muted)}
+  .bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end}
+  .bar .col{width:34px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;border-radius:5px 5px 0 0;overflow:hidden}
+  .bar .rem{background:var(--purple-light)}
+  .bar .done{background:var(--primary)}
+  .bar .code{font-size:12px;color:var(--muted);font-family:var(--mono)}
+  .legend{display:flex;gap:18px;justify-content:center;font-size:12px;color:var(--muted);margin-top:14px}
+  .legend i{width:11px;height:11px;border-radius:3px;display:inline-block;margin-right:6px;vertical-align:-1px}
+  .condrow{display:flex;align-items:center;gap:12px;margin-bottom:13px}
+  .condrow .cd{font-family:var(--mono);font-weight:700;font-size:12px;width:42px;color:var(--primary)}
+  .seg{flex:1;height:9px;border-radius:999px;background:var(--muted-bg);overflow:hidden;display:flex}
+  .seg .f{background:var(--primary)}
+  .condrow .n{font-size:12px;font-weight:600;width:34px;text-align:right}
+  .cardhead{display:flex;align-items:center;justify-content:space-between;padding:15px 22px;border-bottom:1px solid var(--border)}
+  .cardhead b{font-size:13px;font-weight:600}
+  .cardhead a{font-size:12px;color:var(--primary);font-weight:600}
+  .srow{display:flex;align-items:center;gap:14px;padding:13px 22px;border-top:1px solid var(--border)}
+  .srow:first-child{border-top:none}
+  .srow .sc{font-family:var(--mono);font-weight:500;font-size:13.5px}
+  .srow .cl{font-size:13px;color:var(--muted);flex:1}
+  .srow .tm{font-size:12.5px;color:var(--muted)}
+  .pill{font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:999px}
+  .pill.done{background:hsl(160 68% 40% / .14);color:var(--success)}
+  .pill.prog{background:hsl(214 90% 56% / .14);color:var(--blue)}
+  .pill.ready{background:hsl(174 70% 40% / .15);color:var(--teal)}
+  .gates .g{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--border)}
+  .gates .g:first-of-type{border-top:none}
+  .gates .sc{font-family:var(--mono);font-size:12.5px;width:118px;flex-shrink:0}
+  .gates .to{font-size:12.5px;color:var(--muted);flex:1}
+  .gates .cnt{font-family:var(--mono);font-size:12.5px}
+  .btn{background:var(--primary);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12.5px;font-weight:600;font-family:var(--sans)}
+  .btn.ghost{background:var(--surface);border:1px solid var(--border);color:var(--text)}
+  /* chat logs */
+  .cl-wrap{display:flex;gap:24px;align-items:flex-start;height:calc(100% - 60px)}
+  .cl-side{width:224px;flex-shrink:0;display:flex;flex-direction:column;gap:6px}
+  .cl-side .fl{font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+  .sess{text-align:left;border:none;border-radius:10px;padding:9px 12px;background:transparent;color:var(--muted);cursor:default}
+  .sess.on{background:var(--primary-soft);color:var(--primary)}
+  .sess .c{font-family:var(--mono);font-size:13.5px;font-weight:500}
+  .sess .l{font-size:12px}
+  .cl-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:14px}
+  .pills{display:flex;gap:8px}
+  .fpill{font-size:12.5px;padding:6px 14px;border-radius:999px;border:1px solid var(--border);color:var(--muted);background:var(--surface)}
+  .fpill.on{background:var(--primary);border-color:var(--primary);color:#fff;font-weight:600}
+  .logrow{display:flex;gap:16px;padding:14px 20px;border-top:1px solid var(--border);align-items:baseline}
+  .logrow:first-child{border-top:none}
+  .logrow.ai{background:hsl(262 60% 97%)}
+  .logrow .who{width:120px;flex-shrink:0;display:flex;align-items:center;gap:7px;font-size:13.5px;font-weight:600}
+  .logrow.ai .who{color:var(--primary)}
+  .logrow .who .ic{display:inline-flex;color:var(--purple-light)}
+  .logrow .tm{width:64px;flex-shrink:0;font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .logrow .msg{flex:1;font-size:14px;line-height:1.5}
+  .seq{width:34px;flex-shrink:0;font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right}
+</style>
+</head>
+<body>
+
+<!-- ============ SCREEN 1: OVERVIEW ============ -->
+<div class="screen">
+  <aside class="side">
+    <div class="logo"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg></span><b>HAIT</b></div>
+    <div class="navg">
+      <div class="grp">GENERAL</div>
+      <div class="nav on"><span class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg></span>Overview</div>
+      <div class="nav"><span class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg></span>Conditions</div>
+      <div class="nav"><span class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Sessions</div>
+      <div class="nav"><span class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>Chat Logs</div>
+      <div class="nav off"><span class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.31"/><path d="M14 9.3V1.99"/><path d="M8.5 2h7"/><path d="M14 9.3a6.5 6.5 0 1 1-4 0"/><path d="M5.52 16h12.96"/></svg></span>Test Harness</div>
+      <div class="grp">ANALYSIS</div>
+      <div class="nav off"><span class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></span>Analytics</div>
+      <div class="nav off"><span class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg></span>Surveys</div>
+    </div>
+    <div class="user"><span class="ava">SK</span><div style="flex:1"><b>Sumin Kim</b><span>Researcher</span></div><span style="color:var(--muted);display:inline-flex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg></span></div>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="search"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span><input placeholder="Search" readonly><span class="kbd">⌘+F</span></div>
+      <span style="color:var(--muted);display:inline-flex"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg></span>
+    </div>
+    <div class="content">
+      <div class="phead"><div><h1>Overview</h1><p>Monitor experiment progress across all conditions</p></div><span class="upd">Updated: Today</span></div>
+      <div class="stats">
+        <div class="card stat"><div class="h"><span class="lbl">Total participants</span><span class="ic" style="background:var(--primary-soft);color:var(--primary)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span></div><div class="val">42<small>of 55</small></div></div>
+        <div class="card stat"><div class="h"><span class="lbl">Completed sessions</span><span class="ic" style="background:hsl(174 70% 40% / .14);color:var(--teal)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></span></div><div class="val">16<small>/ 21</small></div></div>
+        <div class="card stat"><div class="h"><span class="lbl">Avg duration</span><span class="ic" style="background:hsl(214 90% 56% / .14);color:var(--blue)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span></div><div class="val">19<small>min</small></div></div>
+      </div>
+      <div class="grid32">
+        <div class="card" style="padding:22px">
+          <div class="ct">Recruitment by condition</div>
+          <div class="chart">
+            <div class="target"><span>target: 5 teams</span></div>
+            <div class="bar"><div class="col"><div class="rem" style="height:0%"></div><div class="done" style="height:100%"></div></div><div class="code">C1</div></div>
+            <div class="bar"><div class="col"><div class="rem" style="height:20%"></div><div class="done" style="height:80%"></div></div><div class="code">C2</div></div>
+            <div class="bar"><div class="col"><div class="rem" style="height:40%"></div><div class="done" style="height:60%"></div></div><div class="code">C3</div></div>
+            <div class="bar"><div class="col"><div class="rem" style="height:60%"></div><div class="done" style="height:40%"></div></div><div class="code">C4</div></div>
+            <div class="bar"><div class="col"><div class="rem" style="height:60%"></div><div class="done" style="height:40%"></div></div><div class="code">CTRL</div></div>
+          </div>
+          <div class="legend"><span><i style="background:var(--primary)"></i>completed</span><span><i style="background:var(--purple-light)"></i>remaining</span></div>
+        </div>
+        <div class="card" style="padding:22px">
+          <div class="ct">Conditions</div>
+          <div class="condrow"><span class="cd">C1</span><span class="seg"><span class="f" style="width:100%"></span></span><span class="n">5/5</span></div>
+          <div class="condrow"><span class="cd">C2</span><span class="seg"><span class="f" style="width:80%"></span></span><span class="n">4/5</span></div>
+          <div class="condrow"><span class="cd">C3</span><span class="seg"><span class="f" style="width:60%"></span></span><span class="n">3/5</span></div>
+          <div class="condrow"><span class="cd">C4</span><span class="seg"><span class="f" style="width:40%"></span></span><span class="n">2/5</span></div>
+          <div class="condrow" style="margin-bottom:0"><span class="cd">CTRL</span><span class="seg"><span class="f" style="width:40%"></span></span><span class="n">2/5</span></div>
+        </div>
+      </div>
+      <div class="grid32" style="margin-bottom:0">
+        <div class="card" style="overflow:hidden">
+          <div class="cardhead"><b>Recent sessions</b><a>See all</a></div>
+          <div class="srow"><span class="sc">S-C2-001</span><span class="cl">Leader × XAI</span><span class="tm">2h ago</span><span class="pill done">completed</span></div>
+          <div class="srow"><span class="sc">S-C1-004</span><span class="cl">Peer × XAI</span><span class="tm">3h ago</span><span class="pill prog">in progress</span></div>
+          <div class="srow"><span class="sc">S-CTRL-002</span><span class="cl">No AI</span><span class="tm">5h ago</span><span class="pill ready">data ready</span></div>
+          <div class="srow"><span class="sc">S-C3-003</span><span class="cl">Peer × ACI</span><span class="tm">Yesterday</span><span class="pill done">completed</span></div>
+        </div>
+        <div class="card gates" style="padding:20px 22px"><div class="ct" style="margin-bottom:4px">Gates waiting on you</div>
+          <div class="g"><span class="sc">S-C1-004</span><span class="to">→ discussion</span><span class="cnt" style="color:var(--success)">2/2</span><button class="btn">Approve</button></div>
+          <div class="g"><span class="sc">S-C4-001</span><span class="to">→ pre-survey</span><span class="cnt">1/2</span><button class="btn" style="opacity:.45">Approve</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SCREEN 2: CHAT LOGS ============ -->
+<div class="screen">
+  <aside class="side">
+    <div class="logo"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg></span><b>HAIT</b></div>
+    <div class="navg">
+      <div class="grp">GENERAL</div>
+      <div class="nav"><span class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg></span>Overview</div>
+      <div class="nav"><span class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg></span>Conditions</div>
+      <div class="nav"><span class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Sessions</div>
+      <div class="nav on"><span class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>Chat Logs</div>
+      <div class="nav off"><span class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.31"/><path d="M14 9.3V1.99"/><path d="M8.5 2h7"/><path d="M14 9.3a6.5 6.5 0 1 1-4 0"/><path d="M5.52 16h12.96"/></svg></span>Test Harness</div>
+      <div class="grp">ANALYSIS</div>
+      <div class="nav off"><span class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></span>Analytics</div>
+      <div class="nav off"><span class="ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg></span>Surveys</div>
+    </div>
+    <div class="user"><span class="ava">SK</span><div style="flex:1"><b>Sumin Kim</b><span>Researcher</span></div><span style="color:var(--muted);display:inline-flex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg></span></div>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="search"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span><input placeholder="Search" readonly><span class="kbd">⌘+F</span></div>
+      <span style="color:var(--muted);display:inline-flex"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg></span>
+    </div>
+    <div class="content">
+      <div class="phead"><div><h1>Chat Logs</h1><p>Full transcripts, ordered by sequence — viewable live as a session runs</p></div><button class="btn ghost"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>Export CSV</button></div>
+      <div class="cl-wrap">
+        <div class="cl-side">
+          <div class="fl">Session</div>
+          <button class="sess on"><div class="c">S-C2-001</div><div class="l">Leader × XAI</div></button>
+          <button class="sess"><div class="c">S-C1-004</div><div class="l">Peer × XAI</div></button>
+          <button class="sess"><div class="c">S-C3-003</div><div class="l">Peer × ACI</div></button>
+          <button class="sess"><div class="c">S-CTRL-002</div><div class="l">No AI</div></button>
+        </div>
+        <div class="cl-main">
+          <div class="pills"><span class="fpill on">All</span><span class="fpill">Humans only</span><span class="fpill">AI only</span></div>
+          <div class="card" style="overflow:hidden">
+            <div class="logrow ai"><span class="seq">#1</span><span class="who"><span class="ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="10" x="3" y="11" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" x2="8" y1="16" y2="16"/><line x1="16" x2="16" y1="16" y2="16"/></svg></span>Alex</span><span class="tm">07:41</span><span class="msg">Welcome everyone! I'm Alex, your moderator today. We'll be evaluating four candidates for the pilot position. Let's start with Candidate A — what information do each of you have?</span></div>
+            <div class="logrow"><span class="seq">#2</span><span class="who">Participant Y</span><span class="tm">07:42</span><span class="msg">Candidate A has a good overview of complex contexts, and excellent spatial awareness on my sheet.</span></div>
+            <div class="logrow"><span class="seq">#3</span><span class="who">Participant X</span><span class="tm">07:42</span><span class="msg">My sheet also says A sometimes does not tolerate criticism.</span></div>
+            <div class="logrow ai"><span class="seq">#4</span><span class="who"><span class="ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="10" x="3" y="11" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" x2="8" y1="16" y2="16"/><line x1="16" x2="16" y1="16" y2="16"/></svg></span>Alex</span><span class="tm">07:43</span><span class="msg">That's a useful contrast. A looks strong on situational awareness but weaker on receiving feedback. Participant Y, do you hold anything on Candidate C?</span></div>
+            <div class="logrow"><span class="seq">#5</span><span class="who">Participant Y</span><span class="tm">07:43</span><span class="msg">C can make the right decisions very quickly, but is considered egocentric.</span></div>
+            <div class="logrow ai"><span class="seq">#6</span><span class="who"><span class="ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="10" x="3" y="11" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" x2="8" y1="16" y2="16"/><line x1="16" x2="16" y1="16" y2="16"/></svg></span>Alex</span><span class="tm">07:44</span><span class="msg">Noted. My sheet has C as stress resistant and good for crew atmosphere, which partly offsets the egocentric read. Can either of you confirm?</span></div>
+            <div class="logrow"><span class="seq">#7</span><span class="who">Participant X</span><span class="tm">07:44</span><span class="msg">Yes, I have C as conscientious and skilled with complicated technology.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
